@@ -4,6 +4,7 @@ releases/out
 
 #kman db file(s)
 *.kmd
+*.db
 
 #fossil db
 *.fossil
