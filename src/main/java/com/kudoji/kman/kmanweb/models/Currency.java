@@ -6,11 +6,13 @@ package com.kudoji.kman.kmanweb.models;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -39,11 +41,31 @@ public class Currency {
     private float rate;
 
     @OneToMany(mappedBy = "currency", cascade = CascadeType.PERSIST)
-    private final Set<Account> accounts;
+    @Setter(AccessLevel.NONE)
+    private Set<Account> accounts = new HashSet<>();
 
     public Currency(String name){
         this();
 
         this.name = name;
+    }
+
+    @Override
+    public String toString(){
+        return this.code;
+    }
+
+    @Override
+    public int hashCode(){
+        return id + 7 * code.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj){
+        if (!(obj instanceof Currency)) return false;
+
+        Currency currency = (Currency)obj;
+
+        return ((this.id == currency.id) & (this.code == currency.code));
     }
 }
