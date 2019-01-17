@@ -9,6 +9,8 @@ import lombok.Data;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,6 +31,18 @@ public class AssertValidation<T> {
                 validator.validateProperty(t, property);
 
         assertEquals(0, constraintViolations.size());
+    }
+
+    /**
+     * Returns string with particular lenght
+     * @param lenght
+     * @return
+     */
+    public static String getString(int lenght){
+        return Stream.generate(() -> 1).
+                limit(lenght).
+                map((integer) -> integer.toString()).
+                collect(Collectors.joining(""));
     }
 
 }
