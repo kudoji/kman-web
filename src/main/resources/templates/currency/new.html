@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Add new currency</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <form method="post" th:action="@{/currencies/new}" th:object="${currency}">
+        <table width="100%">
+            <tr align="center">
+                <td>
+                    <h3>Add new currency</h3>
+                    <table width="50%">
+                        <tr>
+                            <td width="20%">name:</td>
+                            <td>
+                                <input type="text" th:field="*{name}" />
+                                <span class="validation-error"
+                                      th:if="${#fields.hasErrors('name')}"
+                                      th:errors="*{name}"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>code:</td>
+                            <td>
+                                <input type="text" th:field="*{code}" />
+                                <span class="validation-error"
+                                      th:if="${#fields.hasErrors('code')}"
+                                      th:errors="*{code}"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><label for="startsWithCode">starts with code:</label></td>
+                            <td>
+                                <input id="startsWithCode" type="checkbox" value="0" th:field="*{startsWithCode}" />
+                                <span class="validation-error"
+                                      th:if="${#fields.hasErrors('startsWithCode')}"
+                                      th:errors="*{startsWithCode}"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>rate:</td>
+                            <td>
+                                <input type="text" th:field="*{rate}" />
+                                <span class="validation-error"
+                                      th:if="${#fields.hasErrors('rate')}"
+                                      th:errors="*{rate}"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <button>submit</button>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </form>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Currencies list</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+    <h3>Currencies list</h3>
+    <a th:href="@{/currencies/new}" title="click to add new currency">add new currency</a>
+    <table width="100%">
+        <tr>
+           <td align="center">
+               <table width="50%">
+                   <tr>
+                       <th>name</th>
+                       <th>code</th>
+                       <th>rate</th>
+                       <th>starts with code</th>
+                   </tr>
+                   <tr th:each="currency: ${currencies}">
+                       <td align="center" th:text="${currency.name}"></td>
+                       <td align="center" th:text="${currency.code}"></td>
+                       <td align="right" th:text="${currency.rate}"></td>
+                       <td align="center" th:text="${currency.startsWithCode}"></td>
+                       <td><a title="click here to edit" th:href="'/currencies/edit/' + ${currency.id}">edit</a></td>
+                       <td><a title="click here to delete" th:href="'/currencies/delete/' + ${currency.id}">delete</a></td>
+                   </tr>
+               </table>
+           </td>
+        </tr>
+    </table>
+</body>
+</html>
