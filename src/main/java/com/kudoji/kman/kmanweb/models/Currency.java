@@ -16,13 +16,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
+@NoArgsConstructor(access = AccessLevel.PUBLIC, force = true)
 @Entity
 @Table(name = "currencies")
 public class Currency {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private final int id;
+    private int id;
 
     @NotNull(message = "Name is invalid")
     @Size(min = 5, max = 35, message = "Name must be from 5 to 35 characters long")
@@ -35,7 +35,7 @@ public class Currency {
     private String code;
 
     @Column(name = "starts_with_code")
-    private boolean isStartsWithCode;
+    private boolean startsWithCode;
 
     @Min(value = 0, message = "Rate must be more than 0.0")
     private float rate;
@@ -52,7 +52,7 @@ public class Currency {
 
     @Override
     public String toString(){
-        return this.code;
+        return "" + this.name + " (" + this.code + ") #" + this.id;
     }
 
     @Override

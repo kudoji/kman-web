@@ -121,7 +121,7 @@ public class CurrencyTest {
     }
 
     @Test(expected = ConstraintViolationException.class)
-    public void testCurencyCodeUniqueness(){
+    public void testCurrencyCodeUniqueness(){
         String usdName = "American dollars";
         String usdCode = "USD";
 
