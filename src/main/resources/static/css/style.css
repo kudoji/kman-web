@@ -19,3 +19,9 @@
 	font-weight: bold;
 	color: red;
 }
+
+.error-message{
+	font-weight: bold;
+	color: red;
+	border: 1px solid orange;	
+}

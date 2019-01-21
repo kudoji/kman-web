@@ -9,6 +9,7 @@
 </head>
 <body>
     <h3>Currencies list</h3>
+    <div class="error-message" th:if="${errorMessage != null}" th:text="${errorMessage}"></div>
     <a th:href="@{/currencies/new}" title="click to add new currency">add new currency</a>
     <table width="100%">
         <tr>

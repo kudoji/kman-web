@@ -4,7 +4,7 @@
       xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Add new currency</title>
+    <title th:text="${currency.id != 0}? 'Edit currency' : 'Add new currency'"></title>
     <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
 <body>
@@ -12,11 +12,12 @@
         <table width="100%">
             <tr align="center">
                 <td>
-                    <h3>Add new currency</h3>
+                    <h3 th:text="${currency.id != 0}? 'Edit currency' : 'Add new currency'"></h3>
                     <table width="50%">
                         <tr>
                             <td width="20%">name:</td>
                             <td>
+                                <input type="text" th:field="*{id}" hidden />
                                 <input type="text" th:field="*{name}" />
                                 <span class="validation-error"
                                       th:if="${#fields.hasErrors('name')}"
