@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -95,5 +96,28 @@ public class CurrencyControllerTest {
         mockMvc.perform(get("/currencies/edit/1"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(header().stringValues("Location", "/currencies/"));
+    }
+
+    @Test
+    public void testDeleteExistedCurrency() throws Exception{
+        Currency currency = new Currency("American dollar");
+        currency.setId(1);
+
+        when(currencyRepository.findById(1)).thenReturn(Optional.of(currency));
+
+        mockMvc.perform(get("/currencies/delete/1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().stringValues("Location", "/currencies/"))
+                .andExpect(flash().attributeExists("infoMessage"));
+    }
+
+    @Test
+    public void testDeleteNotExistedCurrency() throws Exception{
+        when(currencyRepository.findById(1)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/currencies/delete/1"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().stringValues("Location", "/currencies/"))
+                .andExpect(flash().attributeExists("errorMessage"));
     }
 }
