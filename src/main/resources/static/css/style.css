@@ -22,7 +22,16 @@
 
 .error-message{
 	font-weight: bold;
-	color: red;
-	border: 1px solid orange;
+	color: #922B21;
+	border: 1px solid #EDBB99;
+	text-align: center;
+	background-color: #E6B0AA;
+}
+
+.info-message{
+	font-weight: bold;
+	color: #EAFAF1;
+	border: 1px solid #58D68D;
 	text-align: center;	
+	background-color: #239B56;
 }

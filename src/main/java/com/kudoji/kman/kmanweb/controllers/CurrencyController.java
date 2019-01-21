@@ -92,4 +92,29 @@ public class CurrencyController {
 
         return "currency/new";
     }
+
+    @GetMapping(path = "/currencies/delete/{currencyId:[\\d]+}")
+    public String deleteCurrency(
+            @PathVariable int currencyId,
+            RedirectAttributes redirectAttributes
+    ){
+        log.info("processing delete form for currency #{}", currencyId);
+
+        Optional<Currency> optionalCurrency = currencyRepository.findById(currencyId);
+        if (! optionalCurrency.isPresent()){
+            String error = String.format("currency #%d doesn't exist", currencyId);
+            log.warn(error);
+
+            redirectAttributes.addFlashAttribute("errorMessage", error);
+
+            return "redirect:/currencies/";
+        }
+
+        currencyRepository.delete(optionalCurrency.get());
+        String infoMessage = String.format("currency#%d were successfully deleted", currencyId);
+        redirectAttributes.addFlashAttribute("infoMessage", infoMessage);
+        log.info(infoMessage);
+
+        return "redirect:/currencies/";
+    }
 }
