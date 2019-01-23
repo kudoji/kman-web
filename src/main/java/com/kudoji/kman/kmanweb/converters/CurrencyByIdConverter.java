@@ -18,8 +18,9 @@ public class CurrencyByIdConverter implements Converter<String, Currency> {
 
     @Override
     public Currency convert(String id){
-        log.info("Converting id#{}->Currency", id);
+        Currency currency = currencyRepository.findById(Integer.parseInt(id)).orElse(null);
+        log.info("Converting id#{}->Currency '{}'", id, currency);
 
-        return currencyRepository.findById(Integer.parseInt(id)).orElse(null);
+        return currency;
     }
 }
