@@ -5,12 +5,63 @@
 <head>
     <meta charset="UTF-8">
     <title>Accounts list</title>
-    <h3>Accounts list</h3>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<a th:href="@{/currencies/}" title="click for currencies management">currencies management</a>
+<h3>Accounts list</h3>
+<div id="accounts">
     <div th:each="account: ${accounts}">
         <div th:text="${account.name}"></div>
     </div>
-</head>
-<body>
-
+</div>
+<div id="account-form">
+    <form method="post" th:object="${account}" th:action="@{/accounts}">
+        <table>
+            <tr>
+                <td>name:</td>
+                <td>
+                    <input type="hidden" th:field="*{id}" />
+                    <input type="text" th:field="*{name}" />
+                    <span class="validation-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>balance (initial):</td>
+                <td>
+                    <input type="text" th:field="*{balanceInitial}" />
+                    <span class="validation-error"
+                          th:if="${#fields.hasErrors('balanceInitial')}"
+                          th:errors="*{balanceInitial}"></span>
+                </td>
+            </tr>
+            <tr>
+                <td>balance (current):</td>
+                <td>
+                    <input type="text" th:field="*{balanceCurrent}" disabled="true" />
+                </td>
+            </tr>
+            <tr>
+                <td>currency:</td>
+                <td>
+                    <select th:field="*{currency}">
+                        <option th:each="currency: ${currencies}"
+                                th:value="${currency.id}"
+                                th:text="${currency.name} + ' (' + ${currency.code} + ')'"></option>
+                    </select>
+                    <span class="validation-error"
+                          th:if="${#fields.hasErrors('currency')}"
+                          th:errors="*{currency}"></span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <button>submit</button>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<div class="clear"></div>
 </body>
 </html>
