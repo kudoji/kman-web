@@ -4,14 +4,14 @@
 package com.kudoji.kman.kmanweb.models;
 
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 
+@Slf4j
 @Data
-@NoArgsConstructor(access = AccessLevel.PRIVATE, force = true)
+@NoArgsConstructor(access = AccessLevel.PUBLIC, force = true)
 @Entity
 @Table(name = "accounts")
 public class Account {
@@ -26,7 +26,6 @@ public class Account {
 
     @Min(value = 0, message = "Initial balance cannot be less than zero")
     @Column(name = "balance_initial")
-    @Setter(AccessLevel.NONE)
     private float balanceInitial;
 
     @Min(value = 0, message = "Current balance cannot be less than zero")
@@ -35,11 +34,12 @@ public class Account {
 
     @NotNull(message = "Currency is invalid")
     @ManyToOne(fetch = FetchType.LAZY)
-    @Setter(AccessLevel.NONE)
     private Currency currency;
 
     public Account(Currency currency, float balanceInitial){
         this();
+
+        log.info("account constructor is called. currency '{}', balanceInitial: {}", currency, balanceInitial);
 
         if (currency == null) throw new IllegalArgumentException("Currency cannot be null");
         if (balanceInitial < 0f) throw new IllegalArgumentException("Initial balance cannot be less than zero");
@@ -51,9 +51,32 @@ public class Account {
         this.balanceCurrent = balanceInitial;
     }
 
+    public void setBalanceInitial(float balanceInitial){
+        if (this.balanceInitial < 0f) throw new IllegalArgumentException("Initial balance cannot be less than zero");
+
+        if (this.balanceInitial > 0f) throw new IllegalArgumentException("Initial balance is already set");
+
+        this.balanceInitial = balanceInitial;
+        this.balanceCurrent = balanceInitial;
+    }
+
+    public void setCurrency(Currency currency){
+        if (currency == null) throw new IllegalArgumentException("Currency cannot be null");
+
+        if (this.currency == currency) return;
+
+        if (this.currency != null){
+            //  remove link to this account from previous currency object
+            this.currency.getAccounts().remove(this);
+        }
+
+        this.currency = currency;
+        this.currency.getAccounts().add(this);
+    }
+
     @Override
     public String toString(){
-        return this.name;
+        return "" + this.name + " #" + this.id;
     }
 
     @Override
