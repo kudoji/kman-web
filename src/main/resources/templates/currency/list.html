@@ -21,14 +21,16 @@
                        <th>code</th>
                        <th>rate</th>
                        <th>starts with code</th>
+                       <th>edit</th>
+                       <th>delete</th>
                    </tr>
                    <tr th:each="currency: ${currencies}">
                        <td align="center" th:text="${currency.name}"></td>
                        <td align="center" th:text="${currency.code}"></td>
                        <td align="right" th:text="${currency.rate}"></td>
                        <td align="center" th:text="${currency.startsWithCode}"></td>
-                       <td><a title="click here to edit" th:href="'/currencies/edit/' + ${currency.id}">edit</a></td>
-                       <td><a title="click here to delete" th:href="'/currencies/delete/' + ${currency.id}"
+                       <td align="center"><a title="click here to edit" th:href="'/currencies/edit/' + ${currency.id}">edit</a></td>
+                       <td align="center"><a title="click here to delete" th:href="'/currencies/delete/' + ${currency.id}"
                               onclick="return confirm('Are you sure?'); ">delete</a></td>
                    </tr>
                </table>
