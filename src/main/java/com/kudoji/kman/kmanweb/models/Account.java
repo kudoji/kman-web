@@ -17,7 +17,7 @@ import javax.validation.constraints.*;
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private final int id;
+    private int id;
 
     @NotNull(message = "Name is invalid")
     @Size(min = 5, max = 35, message = "Name must be from 5 to 35 characters long")

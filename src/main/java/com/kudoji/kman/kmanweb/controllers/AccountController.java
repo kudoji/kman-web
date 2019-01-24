@@ -12,14 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -82,9 +81,46 @@ public class AccountController {
             return "account/accounts";
         }
 
-        accountRepository.save(account);
+        if (account.getId() == 0){
+            //  insert
+            accountRepository.save(account);
+        }else{
+            //  update
+            currencyRepository.save(account.getCurrency());
+            //  even cascade set to PERSIST for currency, the currency might not be changed
+            //  this is why calling additional save(account) is needed.
+            //  at the same time save(currency) is important because it removes flag DETACHED
+            //  (which happens due to calling account.setId() and hibernate thinks that
+            //  id is set manually and cannot be generated)
+            // from the account entity.
+            accountRepository.save(account);
+        }
+
         log.info("account saved '{}'", account);
 
         return "redirect:/accounts/";
+    }
+
+    @GetMapping(path = "/edit/{accountId:[\\d]+}")
+    public String editAccountForm(
+            Model model,
+            @PathVariable(value = "accountId") int accountId,
+            RedirectAttributes redirectAttributes){
+        log.info("processing edit form for account #{}", accountId);
+
+        Optional<Account> optionalAccount = accountRepository.findById(accountId);
+        if (! optionalAccount.isPresent()){
+            String error = String.format("account #%d doesn't exist", accountId);
+            log.warn(error);
+
+            redirectAttributes.addFlashAttribute("errorMessage", error);
+
+            return "redirect:/accounts/";
+        }
+
+
+        model.addAttribute("account", optionalAccount.get());
+
+        return "account/accounts";
     }
 }
