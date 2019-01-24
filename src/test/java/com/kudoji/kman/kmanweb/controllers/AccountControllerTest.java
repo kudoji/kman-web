@@ -47,14 +47,18 @@ public class AccountControllerTest {
         currencyUSD.setId(1);
         currencyUSD.setCode("USD");
 
+        Currency currencyCAD = new Currency("Canadian Dollar");
+        currencyCAD.setId(2);
+        currencyCAD.setCode("CAD");
+
         currencyList = Arrays.asList(
                 currencyUSD,
-                new Currency("Canadian Dollar")
+                currencyCAD
         );
 
         accountList = Arrays.asList(
             new Account(currencyUSD, 10f),
-            new Account()
+            new Account(currencyCAD, 0f)
         );
 
         when(accountRepository.findAll()).thenReturn(accountList);
@@ -107,5 +111,55 @@ public class AccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("account/accounts"))
                 .andExpect(model().hasErrors());
+    }
+
+    @Test
+    public void testEditAccountFormInValidAccountId() throws Exception{
+        when(accountRepository.findById(20)).thenReturn(Optional.empty());
+
+        mockMvc.perform(get("/accounts/edit/20"))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().stringValues("Location", "/accounts/"))
+                .andExpect(flash().attributeExists("errorMessage"));
+    }
+
+    @Test
+    public void testEditAccountFormValid() throws Exception{
+        Account account = accountList.get(0);
+        int accountId = 1;
+
+        when(accountRepository.findById(accountId)).thenReturn(Optional.of(account));
+        when(currencyRepository.findById(1)).thenReturn(Optional.of(currencyList.get(0)));
+        when(accountRepository.findAll()).thenReturn(accountList);
+
+        mockMvc.perform(get("/accounts/edit/" + accountId))
+                .andExpect(status().isOk())
+                .andExpect(view().name("account/accounts"))
+                .andExpect(model().attribute("accounts", accountList))
+                .andExpect(model().attribute("account", account))
+                .andExpect(request().attribute("accountId", accountId));
+    }
+
+    /**
+     * edit form, submission test
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testSubmitAccountWithExistedAccount() throws Exception{
+        Account account = accountList.get(0);
+        when(accountRepository.save(account)).thenReturn(account);
+
+        Currency currency = currencyList.get(0);
+        when(currencyRepository.findById(1)).thenReturn(Optional.of(currency));
+        when(currencyRepository.save(currency)).thenReturn(currency);
+
+        mockMvc.perform(
+                post("/accounts")
+                        .content("id=1&name=dollar&balanceInitial=10&currency=1")
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(header().stringValues("Location", "/accounts/"))
+                .andExpect(flash().attributeCount(0));
     }
 }
