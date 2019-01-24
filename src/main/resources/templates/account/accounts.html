@@ -10,10 +10,27 @@
 <body>
 <a th:href="@{/currencies/}" title="click for currencies management">currencies management</a>
 <h3>Accounts list</h3>
+<div class="error-message" th:if="${errorMessage != null}" th:text="${errorMessage}"></div>
+<div class="info-message" th:if="${infoMessage != null}" th:text="${infoMessage}"></div>
+<div class="space"></div>
 <div id="accounts">
-    <div th:each="account: ${accounts}">
-        <div th:text="${account.name}"></div>
-    </div>
+    <table width="100%">
+        <tr>
+            <th>name</th>
+            <th>currency</th>
+            <th>balance</th>
+            <th>edit</th>
+            <th>delete</th>
+        </tr>
+        <tr th:each="account: ${accounts}">
+            <td align="left" th:text="${account.name}"></td>
+            <td align="left" th:text="${account.currency.name}"></td>
+            <td align="right" th:text="${account.balanceCurrent}"></td>
+            <td align="center"><a title="click here to edit" th:href="'/accounts/edit/' + ${account.id}">edit</a></td>
+            <td align="center"><a title="click here to delete" th:href="'/account/delete/' + ${account.id}"
+                   onclick="return confirm('Are you sure?'); ">delete</a></td>
+        </tr>
+    </table>
 </div>
 <div id="account-form">
     <form method="post" th:object="${account}" th:action="@{/accounts}">
