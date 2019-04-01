@@ -100,25 +100,112 @@ public class AccountTest {
 
     @Test
     public void testCascadePersistence(){
-        String accountName = "Wallet.USD";
+        String accountName1 = "Wallet.USD";
+        String accountName2 = "Bank.USD";
         Currency currency = new Currency("American dollar");
         currency.setCode("USD");
 
-        Account account = new Account(currency, 0f);
-        account.setName(accountName);
+        Account account1 = new Account(currency, 0f);
+        account1.setName(accountName1);
 
-        testEntityManager.persist(currency);
-        testEntityManager.flush();
+        Account account2 = new Account(currency, 1000f);
+        account2.setName(accountName2);
+
+        assertEquals(2, currency.getAccounts().size());
+        assertTrue(currency.getAccounts().contains(account1));
+        assertTrue(currency.getAccounts().contains(account2));
+        assertEquals(currency, account1.getCurrency());
+        assertEquals(currency, account2.getCurrency());
+
+        testEntityManager.persistAndFlush(currency);
 
         Integer currencyId = testEntityManager.getId(currency, Integer.class);
         assertNotNull(currencyId);
         assertTrue(currencyId > 0);
 
-        Integer accountId = testEntityManager.getId(account, Integer.class);
-        assertNotNull(accountId);
-        assertTrue(accountId > 0);
+        Integer accountId1 = testEntityManager.getId(account1, Integer.class);
+        assertNotNull(accountId1);
+        assertTrue(accountId1 > 0);
 
-        Account account1 = testEntityManager.find(Account.class, accountId);
-        assertEquals(accountName, account1.getName());
+        Account accountTest = testEntityManager.find(Account.class, accountId1);
+        assertEquals(accountName1, accountTest.getName());
+
+        Integer accountId2 = testEntityManager.getId(account2, Integer.class);
+        assertNotNull(accountId2);
+        assertTrue(accountId2 > 0);
+
+        accountTest = testEntityManager.find(Account.class, accountId2);
+        assertEquals(accountName2, accountTest.getName());
+    }
+
+    @Test
+    public void testSetCurrency(){
+        Currency currency = new Currency("American dollar");
+        currency.setCode("USD");
+
+        assertEquals(0, currency.getAccounts().size());
+
+        Account account1 = new Account();
+        account1.setCurrency(currency);
+        account1.setName("wallet.usd");
+
+        assertEquals(1, currency.getAccounts().size());
+
+        Account account2 = new Account();
+        account2.setCurrency(currency);
+        account2.setName("bank.usd");
+
+        assertEquals(2, currency.getAccounts().size());
+        assertTrue(currency.getAccounts().contains(account1));
+        assertTrue(currency.getAccounts().contains(account2));
+        assertEquals(currency, account1.getCurrency());
+        assertEquals(currency, account2.getCurrency());
+
+        account1.setCurrency(null);
+        assertEquals(1, currency.getAccounts().size());
+        assertTrue(!currency.getAccounts().contains(account1));
+        assertTrue(currency.getAccounts().contains(account2));
+        assertEquals(null, account1.getCurrency());
+        assertEquals(currency, account2.getCurrency());
+
+        account2.setCurrency(null);
+        assertEquals(0, currency.getAccounts().size());
+        assertEquals(null, account1.getCurrency());
+        assertEquals(null, account2.getCurrency());
+    }
+
+    @Test
+    public void testPreDelete(){
+        Currency currency = new Currency("American dollar");
+        currency.setCode("USD");
+
+        Account account1 = new Account(currency, 0f);
+        account1.setName("wallet.usd");
+
+        Account account2 = new Account(currency, 1f);
+        account2.setName("bank.usd");
+
+        testEntityManager.persistAndFlush(currency);
+
+        Integer currencyId = testEntityManager.getId(currency, Integer.class);
+        assertTrue(currencyId > 0);
+
+        Integer accountId1 = testEntityManager.getId(account1, Integer.class);
+        assertTrue(accountId1 > 0);
+
+        Integer accountId2 = testEntityManager.getId(account2, Integer.class);
+        assertTrue(accountId2 > 0);
+
+        assertEquals(currency, account1.getCurrency());
+        assertEquals(currency, account2.getCurrency());
+        assertEquals(2, currency.getAccounts().size());
+
+        testEntityManager.remove(account1);
+
+        assertEquals(null, account1.getCurrency());
+        assertEquals(currency, account2.getCurrency());
+        assertEquals(1, currency.getAccounts().size());
+        assertTrue(!currency.getAccounts().contains(account1));
+        assertTrue(currency.getAccounts().contains(account2));
     }
 }

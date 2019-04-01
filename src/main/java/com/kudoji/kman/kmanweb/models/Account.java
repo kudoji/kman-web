@@ -60,18 +60,33 @@ public class Account {
         this.balanceCurrent = balanceInitial;
     }
 
+    /**
+     *
+     * @param currency if null removes prev link
+     */
     public void setCurrency(Currency currency){
-        if (currency == null) throw new IllegalArgumentException("Currency cannot be null");
+        if (currency == null){
+            if (this.currency != null){
+                //  remove prev link
+                log.info("remove account '{}' from the currency '{}'", this, this.currency);
+                log.info("before {}", this.currency.getAccounts().size());
+                this.currency.getAccounts().remove(this);
+                log.info("after {}", this.currency.getAccounts().size());
+            }
 
-        if (this.currency == currency) return;
+            this.currency = null;
+        }else{
+            //  in this case nothing to do
+            if (this.currency == currency) return;
 
-        if (this.currency != null){
-            //  remove link to this account from previous currency object
-            this.currency.getAccounts().remove(this);
+            if (this.currency != null){
+                //  remove link to this account from previous currency object
+                this.currency.getAccounts().remove(this);
+            }
+
+            this.currency = currency;
+            this.currency.getAccounts().add(this);
         }
-
-        this.currency = currency;
-        this.currency.getAccounts().add(this);
     }
 
     @Override
@@ -90,6 +105,14 @@ public class Account {
 
         Account account = (Account)obj;
 
-        return this.id == account.id;
+        return (this.id > 0) & (this.id == account.id);
+    }
+
+    @PreRemove
+    private void preDelete(){
+        //  destroy bi-directional link to the currency
+        log.info("preDelete() is called for account '{}'", this);
+
+        setCurrency(null);
     }
 }

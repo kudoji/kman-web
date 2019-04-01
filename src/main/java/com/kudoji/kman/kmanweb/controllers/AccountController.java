@@ -123,4 +123,29 @@ public class AccountController {
 
         return "account/accounts";
     }
+
+    @GetMapping(path = "/delete/{accountId:[\\d]+}")
+    public String deleteAccountForm(
+            @PathVariable int accountId,
+            RedirectAttributes redirectAttributes){
+        log.info("processing delete form for account #{}", accountId);
+
+        Optional<Account> optionalAccount = accountRepository.findById(accountId);
+        if (! optionalAccount.isPresent()){
+            String error = String.format("account #%d doesn't exist", accountId);
+            log.warn(error);
+
+            redirectAttributes.addFlashAttribute("errorMessage", error);
+
+            return "redirect:/accounts/";
+        }
+
+        accountRepository.delete(optionalAccount.get());
+
+        String infoMessage = String.format("account#%d were successfully deleted", accountId);
+        redirectAttributes.addFlashAttribute("infoMessage", infoMessage);
+        log.info(infoMessage);
+
+        return "redirect:/accounts/";
+    }
 }
